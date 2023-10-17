@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+    <title>CRUD API</title>
+    <style>
+        .bg-mynav {
+  background-color: #2c3e50;
+}
+
+body {
+  font-size: 1.25rem;
+  background-color: #f6f8fa;
+}
+
+td {
+  line-height: 3rem;
+}.bg-mynav {
+  background-color: #2c3e50;
+}
+
+body {
+  font-size: 1.25rem;
+  background-color: #f6f8fa;
+}
+
+td {
+  line-height: 3rem;
+}
+        button{
+        margin-left : 5px;
+        }
+        label{
+        font-weight : bolder;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-mynav">
+    <div class="container-fluid text-center">
+        <a class="navbar-brand " href="#"> EMPLOYMENT MANAGEMENT </a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="d-flex bd-highlight mb-3">
+        <div class="me-auto p-2 bd-highlight"><h2>Employees</h2></div>
+        <div class="p-2 bd-highlight">
+            <button type="button" class="btn btn-primary" onclick="showUserCreateBox()">Create</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Avatar</th>
+                <th scope="col">Name</th>
+                <th scope="col">Employee ID</th>
+                <th scope="col">Mobile</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody id="mytable">
+            <tr>
+                <th scope="row" colspan="5">Loading...</th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+           const apiUrl = 'http://localhost:8080/employee';
+           fetch(apiUrl)
+               .then(response => response.json())
+               .then(data => {
+                    console.log(data);
+                   const table = document.getElementById('mytable');
+                   let trow = "";
+                   let sno = 1;
+                   for(let r of data){
+                   let seed = "seed" + sno;
+                    trow += `<tr>
+                    <td>${sno}</td>
+                    <td><img width="50px" src="https://avatars.dicebear.com/api/identicon/${seed}.svg" class="avatar"></td>
+                    <td>${r.name}</td>
+                    <td>${r.eid}</td>
+                    <td>${r.mobile}</td>
+                    <td><button class="btn btn-warning mr-4" onClick="edit('${r.eid}')">Edit</button><button class="btn btn-danger ml-2" onClick="deleteEmployee('${r.eid}')">Delete</button></td>
+                    </tr>`
+                    sno++;
+                   }
+
+
+                   table.innerHTML = trow;
+               })
+               .catch(error => {
+                   // Handle any errors that occurred during the fetch
+                   console.error('An error occurred:', error);
+               });
+       });
+
+
+
+
+   function showUserCreateBox() {
+ Swal.fire({
+  title: "Create user",
+  html:
+    '<input id="eid" class="swal2-input" placeholder="Employee ID">' +
+    '<input id="name" class="swal2-input" placeholder="Name">' +
+    '<input id="mobile" class="swal2-input" placeholder="Mobile">',
+  showCancelButton: true, // Show the Cancel button
+  showConfirmButton: true, // Show the Add button
+  confirmButtonText: "Add",
+  cancelButtonText: "Cancel",
+})
+  .then((result) => {
+    if (result.isConfirmed) {
+      // The "Add" button was clicked
+      const eid = document.getElementById("eid").value;
+      const name = document.getElementById("name").value;
+      const mobile = document.getElementById("mobile").value;
+
+      const url = "http://localhost:8080/employee/createEmployee"; // Adjust the URL as needed
+      const data = {
+        eid: eid,
+        name: name,
+        mobile: mobile,
+      };
+
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      };
+
+      return fetch(url, requestOptions)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("POST request successful:", data);
+          location.reload(); // Reload the page or perform other actions
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  });
+
+}
+   function userCreate() {
+     const eid = document.getElementById("eid").value;
+     const name = document.getElementById("name").value;
+     const mobile = document.getElementById("mobile").value;
+
+                    const url = "http://localhost:8080/employee/createEmployee";
+                    const data = {
+                      eid: eid,
+                      name : name,
+                      mobile : mobile,
+
+                    };
+
+                    const requestOptions = {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json"
+                      },
+                      body: JSON.stringify(data)
+                    };
+
+                    fetch(url, requestOptions)
+                      .then(response => {
+                        if (!response.ok) {
+                          throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                      })
+                      .then(data => {
+                        console.log("POST request successful:", data);
+                        location.reload();
+                      })
+                      .catch(error => {
+                        console.error("Error:", error);
+                      });
+
+   }
+
+async function edit(eid) {
+let edata;
+const apiUrl = `http://localhost:8080/employee/${eid}`;
+           await fetch(apiUrl)
+               .then(response => response.json())
+               .then(data => {
+                    console.log(data);
+                    Swal.fire({
+  title: "Employee Details",
+  html:
+    '<label> Employee ID</label><br><input id="eid" class="swal2-input" placeholder="Employee ID" value="' +
+    data.eid +
+    '" disabled> <br>' +
+    '<label>Name</label><br><input id="name" class="swal2-input" placeholder="Name" value="' +
+    data.name +
+    '"> <br>' +
+    '<label>Mobile</label><br><input id="mobile" class="swal2-input" placeholder="Mobile" value="' +
+    data.mobile +
+    '"> <br>',
+  showCancelButton: true, // Show the Cancel button
+  showConfirmButton: true, // Show the Save button
+  confirmButtonText: "Save",
+  cancelButtonText: "Cancel",
+})
+  .then((result) => {
+    if (result.isConfirmed) {
+      // The "Save" button was clicked
+      const eid = document.getElementById("eid").value;
+      const name = document.getElementById("name").value;
+      const mobile = document.getElementById("mobile").value;
+
+      const url = "http://localhost:8080/employee/updateEmployee";
+      const data = {
+        eid: eid,
+        name: name,
+        mobile: mobile,
+      };
+
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      };
+
+      return fetch(url, requestOptions)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("POST request successful:", data);
+          location.reload();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  });
+
+
+               })
+               .catch(error => {
+                   // Handle any errors that occurred during the fetch
+                   console.error('An error occurred:', error);
+               });
+
+
+}
+
+   function deleteEmployee(eid){
+
+const url = "http://localhost:8080/employee/deleteEmployee";
+        const data = {
+          eid: eid,
+        };
+
+        // Create the request options
+        const requestOptions = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        };
+
+        fetch(url, requestOptions)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log("POST request successful:", data);
+            location.reload();
+          })
+          .catch(error => {
+            console.error("Error:", error);
+          });
+    }
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.16/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</body>
+</html>
