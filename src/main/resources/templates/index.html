@@ -81,7 +81,7 @@ td {
 <script>
     document.addEventListener("DOMContentLoaded", function() {
 
-           const apiUrl = 'http://localhost:8080/employee';
+           const apiUrl = '/employee';
            fetch(apiUrl)
                .then(response => response.json())
                .then(data => {
@@ -133,7 +133,7 @@ td {
       const name = document.getElementById("name").value;
       const mobile = document.getElementById("mobile").value;
 
-      const url = "http://localhost:8080/employee/createEmployee"; // Adjust the URL as needed
+      const url = "/employee/createEmployee"; // Adjust the URL as needed
       const data = {
         eid: eid,
         name: name,
@@ -171,7 +171,7 @@ td {
      const name = document.getElementById("name").value;
      const mobile = document.getElementById("mobile").value;
 
-                    const url = "http://localhost:8080/employee/createEmployee";
+                    const url = "/employee/createEmployee";
                     const data = {
                       eid: eid,
                       name : name,
@@ -206,7 +206,7 @@ td {
 
 async function edit(eid) {
 let edata;
-const apiUrl = `http://localhost:8080/employee/${eid}`;
+const apiUrl = `/employee/${eid}`;
            await fetch(apiUrl)
                .then(response => response.json())
                .then(data => {
@@ -235,7 +235,7 @@ const apiUrl = `http://localhost:8080/employee/${eid}`;
       const name = document.getElementById("name").value;
       const mobile = document.getElementById("mobile").value;
 
-      const url = "http://localhost:8080/employee/updateEmployee";
+      const url = "/employee/updateEmployee";
       const data = {
         eid: eid,
         name: name,
@@ -279,7 +279,7 @@ const apiUrl = `http://localhost:8080/employee/${eid}`;
 
    function deleteEmployee(eid){
 
-const url = "http://localhost:8080/employee/deleteEmployee";
+const url = "/employee/deleteEmployee";
         const data = {
           eid: eid,
         };
